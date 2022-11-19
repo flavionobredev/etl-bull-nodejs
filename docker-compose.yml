@@ -8,6 +8,20 @@ networks:
     driver: bridge
 
 services:
+
+  import-api:
+    container_name: import-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3001:3001
+    volumes:
+      - ./:/usr/import-api/app
+    entrypoint: sh -c "npm install && npm run start:dev"
+    networks:
+      - import-api
+
   redis:
     image: redis
     container_name: redis
