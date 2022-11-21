@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class ReadSheetService implements ReadFileUseCase {
-  read(buffer: Buffer): Readable {
+  readToCsv(buffer: Buffer): Readable {
     const workbook = XlsxRead(buffer, { type: 'buffer' });
     stream.set_readable(Readable);
     return stream.to_csv(workbook.Sheets[workbook.SheetNames[0]], {

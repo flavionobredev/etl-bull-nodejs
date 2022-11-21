@@ -4,6 +4,7 @@ import {
   HttpCode,
   Post,
   Response,
+  Request,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -12,7 +13,9 @@ import { createReadStream } from 'fs';
 import { Writable } from 'stream';
 import { join } from 'path';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Response as Res } from 'express';
+import { Request as Req, Response as Res } from 'express';
+import { FileValidationPipe } from './validations/file.pipe';
+import { TokenPayloadMiddleware } from 'src/shared/middlewares/token.middleware';
 
 const HeadersEnum = {
   nome: 'name',
@@ -57,7 +60,7 @@ const writeFn = function (chunk: Buffer, encoding, next) {
   next();
 };
 
-@Controller('extract')
+@Controller('import')
 export class ExtractController {
   private readonly writable: Writable;
   constructor(private readonly extractService: Extract) {
@@ -70,13 +73,16 @@ export class ExtractController {
   @HttpCode(204)
   @UseInterceptors(FileInterceptor('file'))
   async publishExtract(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile(FileValidationPipe) file: Express.Multer.File,
     @Body() body: any,
+    @Request() req: Req & TokenPayloadMiddleware,
     @Response() response: Res,
   ) {
     response.status(204).send();
+    // TODO: add company and employee validation
+    console.log(req.tokenPayload)
     console.log(file);
-    this.extractService.read(file);
+    // this.extractService.read(file);
     // createReadStream(join(__dirname, '../../teste.csv')).pipe(this.writable);
   }
 }

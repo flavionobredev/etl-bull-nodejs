@@ -4,18 +4,7 @@ import { Queue } from 'bull';
 import { Multer } from 'multer';
 import { ReadSheetService } from './services/xlsx-read.service';
 import { Writable } from 'stream';
-
-enum HeadersEnum {
-  nome = 'name',
-  email = 'email',
-  'e-mail' = 'email',
-  telefone = 'phone',
-  celular = 'phone',
-  tags = 'tags',
-  tag = 'tags',
-  código = 'code',
-  codigo = 'code',
-}
+import { HeadersEnum } from 'src/shared/enums/headers.enum';
 
 @Injectable()
 export class Extract {
@@ -25,16 +14,13 @@ export class Extract {
   ) {}
 
   async read(file: Express.Multer.File) {
-    const readable = this.readSheet.read(file.buffer);
+    const readable = this.readSheet.readToCsv(file.buffer);
     readable.on('data', this.writeToQueue().bind(this));
+    // TODO: readable.on("error", ...)
   }
 
   async publish(message: any) {
-    this.newImportQueue.add(message, {
-      removeOnComplete: {
-        age: 60 * 60 * 1,
-      },
-    });
+    this.newImportQueue.add(message);
   }
 
   private writeToQueue() {
@@ -43,10 +29,12 @@ export class Extract {
         .toString()
         .split(',')
         .map((value) => value.replace(/\n/, '').trim());
+
+      /** o parse é feito primeiro pois, atualmente, o primeiro chunk sempre é [''].
+       * logo, o segundo é, de fato, a primeira linha.
+       * */
       if (this.isFirstChunk !== false) {
-        this.headers = values.map((header) => {
-          return HeadersEnum[header?.toLowerCase()] || null;
-        });
+        this.headers = HeadersEnum.parseHeaders(values);
         this.isFirstChunk = values.length === 1 && values[0] === '';
         return;
       }
