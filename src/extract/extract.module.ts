@@ -1,6 +1,7 @@
 import { BullModule } from '@nestjs/bull';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ValidateTokenMiddleware } from 'src/shared/middlewares/token.middleware';
+import { CompanyRepository, EmployeeRepository } from 'src/shared/repository';
 import { Extract } from './extract';
 import { ExtractController } from './extract.controller';
 import { ReadSheetService } from './services/xlsx-read.service';
@@ -17,7 +18,13 @@ import { FileValidationPipe } from './validations/file.pipe';
       },
     }),
   ],
-  providers: [Extract, ReadSheetService, FileValidationPipe],
+  providers: [
+    Extract,
+    ReadSheetService,
+    FileValidationPipe,
+    CompanyRepository,
+    EmployeeRepository,
+  ],
   controllers: [ExtractController],
 })
 export class ExtractModule implements NestModule {

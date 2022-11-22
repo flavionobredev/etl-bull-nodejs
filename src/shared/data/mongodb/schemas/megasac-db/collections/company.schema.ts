@@ -9,11 +9,7 @@ export interface Company {
 
 export type CompanyDocument = Company & Document;
 
-@Schema({
-  timestamps: {
-    createdAt: 'created_at',
-  },
-})
+@Schema()
 class _CompanySchema implements Company {
   @Prop({
     type: Object,

@@ -4,7 +4,7 @@ import { DatabaseMongoEnum } from '../providers.enum';
 
 export const makeMongooseConnectionProviders = (): Provider[] => [
 	{
-		provide: DatabaseMongoEnum.TALLOS_MEGASAC,
+		provide: DatabaseMongoEnum.MEGASAC_DATABASE,
 		useFactory: () =>
 			createConnection(process.env.MEGASAC_CONNECTION, {
 				autoIndex: false,

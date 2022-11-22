@@ -21,7 +21,10 @@ services:
     entrypoint: sh -c "npm install && npm run start:dev"
     environment:
       MAX_FILE_SIZE: 10485760 # 10MB
-      JWT_ACCESS_TOKEN_SECRET: access-token # change to access-t
+      JWT_ACCESS_TOKEN_SECRET: access-t # change to access-t
+      MEGASAC_CONNECTION: mongodb://${MONGO_DEV_USER}:${MONGO_DEV_PWD}@${MONGO_DEV_HOST}/db?authMechanism=DEFAULT&replicaSet=rs0&authSource=admin
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     networks:
       - import-api
 
